@@ -1,17 +1,24 @@
-
 -- Use the `ref` function to select from other models-
 
 SELECT
-    o.Order_ID,
-    c.Customer_ID,
+    o.ID as O_ID,
+    c.ID,
     c.Customer_Name,
-    p.Product_ID,
-    p.Product_Name,
-    o.Quantity,
-    o.Order_Date
+    o.user_id,
+    o.Order_Date,
+    o.status,
+    o._etl_loaded_at,
+        p.paymentmethod as payment_method,
+    p.status as payment_status,
+    p.amount,
+    p.created,
+    p.orderid as order_id,
+    p._batched_at
+   
 FROM
-    raw.orders o
+    dbt-tutorial.jaffle_shop.orders o
 JOIN
-    {{ ref("stg_customers") }} c ON o.Customer_ID = c.Customer_ID
-JOIN
-    raw.products p ON o.Product_ID = p.Product_ID
+    {{ ref("stg_customers") }} c ON o.ID = c.ID
+
+    JOIN
+    dbt-tutorial.stripe.payment p ON p.id= o.id
